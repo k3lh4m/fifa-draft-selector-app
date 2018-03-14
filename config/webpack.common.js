@@ -54,7 +54,23 @@ module.exports = {
                     fallback: "style-loader",
                     use: ['css-loader?sourceMap', 'sass-loader?sourceMap']
                 }))
-            }
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'postcss-loader',
+                    'sass-loader',
+                    {
+                        loader: 'sass-resources-loader',
+                        options: {
+                            // Provide path to the file with resources
+                            resources: '../src/styles/theme.scss'
+                        },
+                    },
+                ],
+            },
         ]
     },
 
