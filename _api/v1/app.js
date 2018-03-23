@@ -1,34 +1,34 @@
 const express = require('express');
 const app = express();
 
+const bodyParser = require('body-parser');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const config = require('config');
+
+//Routes require
+const Players = require('./routes/players');
+
 app.use(express.json());
 
-const players = [
-    {"name":"Mikey Whelan","id":"1"},
-    {"name":"Josh Lundstram","id":"2"},
-    {"name":"Emmet Hughes","id":"3"}
-];
+//Debugger
+//Set debug ENV variables on node start up
+//Example: DEBUG=app:db node app.js
+const startUpDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
 
-app.get('/', (req, res) => {
-    res.send('working');
-});
+//Middleware
+app.use(bodyParser.json());
+app.use(helmet());
 
-app.get('/api/players', (req, res) => {
-    res.send(players);
-});
+//Routes
+app.use('/api/players', Players );
 
-app.get('/api/players/:id', (req, res) => {
-    const player = players.find(c => c.id === req.params.id);
+if(app.get('env') === 'development') {
+    startUpDebugger('Morgan enabled...');
+    app.use(morgan('tiny'));
+}
 
-    if(!player) {
-        res.status(404).send('cannot find soz mate')
-    } else {
-        res.send(player)
-    }
-});
-
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-    console.log(`Listenin on ${port}`);
+app.listen(4010, () => {
+    startUpDebugger('Listening to server 4000');
 });
